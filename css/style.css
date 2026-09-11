@@ -191,6 +191,8 @@ section{padding:88px 0;}
 
 .projects-slider{
   position:relative;overflow:hidden;flex:1;
+  touch-action: pan-y;
+  user-select: none;
 }
 
 .projects-track{

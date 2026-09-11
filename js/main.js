@@ -23,6 +23,9 @@ if (slider) {
   const nextBtn = document.querySelector('.slider-btn.next');
   const dots = Array.from(document.querySelectorAll('.dots span'));
   let index = 0;
+  let touchStartX = 0;
+  let touchEndX = 0;
+  const swipeThreshold = 45;
 
   function getVisibleCards() {
     if (window.innerWidth <= 760) return 1;
@@ -50,14 +53,38 @@ if (slider) {
     });
   }
 
-  prevBtn?.addEventListener('click', () => {
+  function goToPrev() {
     index = Math.max(0, index - 1);
     updateSlider();
-  });
+  }
 
-  nextBtn?.addEventListener('click', () => {
+  function goToNext() {
     index = Math.min(cards.length - getVisibleCards(), index + 1);
     updateSlider();
+  }
+
+  prevBtn?.addEventListener('click', goToPrev);
+  nextBtn?.addEventListener('click', goToNext);
+
+  slider.addEventListener('touchstart', (event) => {
+    touchStartX = event.changedTouches[0].screenX;
+    touchEndX = touchStartX;
+  }, { passive: true });
+
+  slider.addEventListener('touchmove', (event) => {
+    touchEndX = event.changedTouches[0].screenX;
+  }, { passive: true });
+
+  slider.addEventListener('touchend', () => {
+    const swipeDistance = touchEndX - touchStartX;
+
+    if (Math.abs(swipeDistance) < swipeThreshold) return;
+
+    if (swipeDistance < 0) {
+      goToNext();
+    } else {
+      goToPrev();
+    }
   });
 
   window.addEventListener('resize', updateSlider);
